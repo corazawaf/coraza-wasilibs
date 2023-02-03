@@ -7,7 +7,6 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"path"
@@ -68,22 +67,6 @@ func pmEvaluate(matcher ahocorasick.AhoCorasick, tx rules.TransactionState, valu
 	}
 
 	return numMatches > 0
-}
-
-func newPMFromDataset(options rules.OperatorOptions) (rules.Operator, error) {
-	data := options.Arguments
-	dataset, ok := options.Datasets[data]
-	if !ok {
-		return nil, fmt.Errorf("dataset %q not found", data)
-	}
-	builder := ahocorasick.NewAhoCorasickBuilder(ahocorasick.Opts{
-		AsciiCaseInsensitive: true,
-		MatchOnlyWholeWords:  false,
-		MatchKind:            ahocorasick.LeftMostLongestMatch,
-		DFA:                  true,
-	})
-
-	return &pm{matcher: builder.Build(dataset)}, nil
 }
 
 func newPMFromFile(options rules.OperatorOptions) (rules.Operator, error) {
