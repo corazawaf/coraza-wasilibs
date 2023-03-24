@@ -1,5 +1,5 @@
-github.com/corazawaf/coraza/v3 v3.0.0-20230125200438-bb55a14650d7 h1:0c3ZZRZcW5PCb9G450AzvqPbzTHIgB8Nzxe2UKzFPNc=
-github.com/corazawaf/coraza/v3 v3.0.0-20230125200438-bb55a14650d7/go.mod h1:dXFswKzaDVm4SsHAyvi12A4yLfg2bVx/myCBkyGALGU=
+github.com/corazawaf/coraza/v3 v3.0.0-rc.1.0.20230323163300-b8e5c6dbdd05 h1:3+TKjUFjjbHFiLIkJRBEqU0uE5xD29Lexs9/bscRQGY=
+github.com/corazawaf/coraza/v3 v3.0.0-rc.1.0.20230323163300-b8e5c6dbdd05/go.mod h1:GhpyYpKaOG/wHZtdyUpu74wo9StS3fzmtKvgSzms/XQ=
 github.com/corazawaf/libinjection-go v0.1.2 h1:oeiV9pc5rvJ+2oqOqXEAMJousPpGiup6f7Y3nZj5GoM=
 github.com/corazawaf/libinjection-go v0.1.2/go.mod h1:OP4TM7xdJ2skyXqNX1AN1wN5nNZEmJNuWbNPOItn7aw=
 github.com/foxcpp/go-mockdns v1.0.0 h1:7jBqxd3WDWwi/6WhDvacvH1XsN3rOLXyHM1uhvIx6FI=
@@ -19,7 +19,7 @@ github.com/wasilibs/go-libinjection v0.1.0 h1:WivsHc8c0cNWETEVhG0NpCezxvCn9zlVli
 github.com/wasilibs/go-libinjection v0.1.0/go.mod h1:yRoVK5Ks0kH65fJB1uzppuEn77pJmP8hagoAdPcgbtI=
 github.com/wasilibs/go-re2 v0.1.0 h1:+pcjlvge6E9WWU4eaMlULRikEUkhPDXSFfCF5p7htMI=
 github.com/wasilibs/go-re2 v0.1.0/go.mod h1:F91Yac+zPNDFrrd8fl4mSd7+TTu2tYiX56BEIEPQl2M=
-golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 h1:6zppjxzCulZykYSLyVDYbneBfbaBIQPYMevg0bEwv2s=
-golang.org/x/net v0.5.0 h1:GyT4nK/YDHSqa1c4753ouYCDajOYKTja9Xb/OHtgvSw=
-golang.org/x/sys v0.4.0 h1:Zr2JFtRQNX3BCZ8YtxRE9hNJYC8J6I1MVbMg6owUp18=
-golang.org/x/tools v0.1.12 h1:VveCTK38A2rkS8ZqFY25HIDFscX5X9OoEhJd3quQmXU=
+golang.org/x/mod v0.8.0 h1:LUYupSeNrTNCGzR/hVBk2NHZO4hXcVaW1k4Qx7rjPx8=
+golang.org/x/net v0.8.0 h1:Zrh2ngAOFYneWTAIAPethzeaQLuHwhuBkuV6ZiRnUaQ=
+golang.org/x/sys v0.6.0 h1:MVltZSvRTcU2ljQOhs94SXPftV6DCNnZViHeQps87pQ=
+golang.org/x/tools v0.6.0 h1:BOw41kyTf3PuCW1pVQf8+Cyg8pMlkYB1oo9iJ6D/lKM=

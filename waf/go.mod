@@ -4,8 +4,9 @@ go 1.19
 
 require (
 	github.com/bmatcuk/doublestar/v4 v4.4.0
-	github.com/corazawaf/coraza/v3 v3.0.0-20230125200438-bb55a14650d7
+	github.com/corazawaf/coraza-coreruleset v0.0.0-20230306071035-6b1388c13a62
 	github.com/corazawaf/coraza-wasilibs v0.0.0-00010101000000-000000000000
+	github.com/corazawaf/coraza/v3 v3.0.0-rc.1.0.20230323163300-b8e5c6dbdd05
 	github.com/coreruleset/go-ftw v0.4.5
 	github.com/rs/zerolog v1.28.0
 )
@@ -40,8 +41,8 @@ require (
 	github.com/wasilibs/go-re2 v0.1.0 // indirect
 	github.com/yargevad/filepathx v1.0.0 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/net v0.5.0 // indirect
-	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

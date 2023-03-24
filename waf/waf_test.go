@@ -4,9 +4,7 @@
 package waf
 
 import (
-	"archive/zip"
 	"bufio"
-	"bytes"
 	_ "embed"
 	b64 "encoding/base64"
 	"fmt"
@@ -22,6 +20,8 @@ import (
 	"testing"
 
 	"github.com/bmatcuk/doublestar/v4"
+	coreruleset "github.com/corazawaf/coraza-coreruleset"
+	crstests "github.com/corazawaf/coraza-coreruleset/tests"
 	"github.com/corazawaf/coraza/v3"
 	txhttp "github.com/corazawaf/coraza/v3/http"
 	"github.com/corazawaf/coraza/v3/types"
@@ -32,26 +32,23 @@ import (
 	"github.com/rs/zerolog"
 )
 
-//go:embed coreruleset-32e6d80419d386a330ddaf5e60047a4a1c38a160.zip
-var crsZip []byte
-
 //go:embed coraza.conf-recommended
 var confRecommended string
 
 func TestWAF(t *testing.T) {
-	crs, errorLogPath, server := setupWAF(t)
+	errorLogPath, server := setupWAF(t)
 	defer server.Close()
 
-	runFTW(t, crs, errorLogPath, server)
+	runFTW(t, errorLogPath, server)
 }
 
 func BenchmarkWAF(b *testing.B) {
-	crs, errorLogPath, server := setupWAF(b)
+	errorLogPath, server := setupWAF(b)
 	defer server.Close()
 
 	b.Run("FTW", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			runFTW(b, crs, errorLogPath, server)
+			runFTW(b, errorLogPath, server)
 		}
 	})
 
@@ -68,12 +65,12 @@ func BenchmarkWAF(b *testing.B) {
 	}
 }
 
-func runFTW(tb testing.TB, crs fs.FS, errorLogPath string, server *httptest.Server) {
+func runFTW(tb testing.TB, errorLogPath string, server *httptest.Server) {
 	tb.Helper()
 
 	var tests []test.FTWTest
-	err := doublestar.GlobWalk(crs, "tests/regression/tests/**/*.yaml", func(path string, d os.DirEntry) error {
-		yaml, err := fs.ReadFile(crs, path)
+	err := doublestar.GlobWalk(crstests.FS, "**/*.yaml", func(path string, d os.DirEntry) error {
+		yaml, err := fs.ReadFile(crstests.FS, path)
 		if err != nil {
 			return err
 		}
@@ -86,6 +83,9 @@ func runFTW(tb testing.TB, crs fs.FS, errorLogPath string, server *httptest.Serv
 	})
 	if err != nil {
 		tb.Fatal(err)
+	}
+	if len(tests) == 0 {
+		tb.Fatal("no tests found")
 	}
 
 	u, _ := url.Parse(server.URL)
@@ -113,32 +113,23 @@ func runFTW(tb testing.TB, crs fs.FS, errorLogPath string, server *httptest.Serv
 	}
 }
 
-func setupWAF(tb testing.TB) (fs.FS, string, *httptest.Server) {
+func setupWAF(tb testing.TB) (string, *httptest.Server) {
 	tb.Helper()
 
-	crsReader, err := zip.NewReader(bytes.NewReader(crsZip), int64(len(crsZip)))
-	if err != nil {
-		tb.Fatal(err)
-	}
-
-	crs, err := fs.Sub(crsReader, "coreruleset-32e6d80419d386a330ddaf5e60047a4a1c38a160")
-	if err != nil {
-		tb.Fatal(err)
-	}
 	conf := coraza.NewWAFConfig()
 	customTestingConfig := `
 SecResponseBodyMimeType text/plain
 SecDefaultAction "phase:3,log,auditlog,pass"
 SecDefaultAction "phase:4,log,auditlog,pass"
+SecDefaultAction "phase:5,log,auditlog,pass"
+# Rule 900005 from https://github.com/coreruleset/coreruleset/blob/v4.0/dev/tests/regression/README.md#requirements
 SecAction "id:900005,\
   phase:1,\
   nolog,\
   pass,\
   ctl:ruleEngine=DetectionOnly,\
   ctl:ruleRemoveById=910000,\
-  # Interferes with ftw log scanning
-  ctl:ruleRemoveById=920250,\
-  setvar:tx.paranoia_level=4,\
+  setvar:tx.blocking_paranoia_level=4,\
   setvar:tx.crs_validate_utf8_encoding=1,\
   setvar:tx.arg_name_length=100,\
   setvar:tx.arg_length=400,\
@@ -161,11 +152,11 @@ SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
 	// 3. CRS basic config
 	// 4. CRS rules (on top of which are applied the previously defined SecDefaultAction)
 	conf = conf.
-		WithRootFS(crs).
+		WithRootFS(coreruleset.FS).
 		WithDirectives(confRecommended).
 		WithDirectives(customTestingConfig).
-		WithDirectives("Include crs-setup.conf.example").
-		WithDirectives("Include rules/*.conf")
+		WithDirectives("Include @crs-setup.conf.example").
+		WithDirectives("Include @owasp_crs/*.conf")
 
 	errorPath := filepath.Join(tb.TempDir(), "error.log")
 	errorFile, err := os.Create(errorPath)
@@ -188,7 +179,7 @@ SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
 		tb.Fatal(err)
 	}
 
-	s := httptest.NewServer(txhttp.WrapHandler(waf, tb.Logf, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	s := httptest.NewServer(txhttp.WrapHandler(waf, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		w.Header().Set("Content-Type", "text/plain")
 		switch {
@@ -221,5 +212,5 @@ SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
 			fmt.Fprintf(w, "Hello!")
 		}
 	})))
-	return crs, errorPath, s
+	return errorPath, s
 }
