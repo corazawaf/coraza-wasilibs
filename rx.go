@@ -5,10 +5,13 @@ package wasilibs
 
 import (
 	"fmt"
+	"strconv"
+	"unicode/utf8"
 
 	"github.com/corazawaf/coraza/v3/operators"
 	"github.com/corazawaf/coraza/v3/rules"
 	"github.com/wasilibs/go-re2"
+	"github.com/wasilibs/go-re2/experimental"
 )
 
 type rx struct {
@@ -23,7 +26,14 @@ func newRX(options rules.OperatorOptions) (rules.Operator, error) {
 	// - https://groups.google.com/g/golang-nuts/c/jiVdamGFU9E
 	data := fmt.Sprintf("(?sm)%s", options.Arguments)
 
-	re, err := re2.Compile(data)
+	var re *re2.Regexp
+	var err error
+
+	if matchesArbitraryBytes(data) {
+		re, err = experimental.CompileLatin1(data)
+	} else {
+		re, err = re2.Compile(data)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -51,4 +61,37 @@ func (o *rx) Evaluate(tx rules.TransactionState, value string) bool {
 // RegisterRX registers the rx operator using a WASI implementation instead of Go.
 func RegisterRX() {
 	operators.Register("rx", newRX)
+}
+
+// matchesArbitraryBytes checks for control sequences for byte matches in the expression.
+// If the sequences are not valid utf8, it returns true.
+func matchesArbitraryBytes(expr string) bool {
+	decoded := make([]byte, 0, len(expr))
+	for i := 0; i < len(expr); i++ {
+		c := expr[i]
+		if c != '\\' {
+			decoded = append(decoded, c)
+			continue
+		}
+		if i+3 >= len(expr) {
+			decoded = append(decoded, expr[i:]...)
+			break
+		}
+		if expr[i+1] != 'x' {
+			decoded = append(decoded, expr[i])
+			continue
+		}
+
+		v, mb, _, err := strconv.UnquoteChar(expr[i:], 0)
+		if err != nil || mb {
+			// Wasn't a byte escape sequence, shouldn't happen in practice.
+			decoded = append(decoded, expr[i])
+			continue
+		}
+
+		decoded = append(decoded, byte(v))
+		i += 3
+	}
+
+	return !utf8.Valid(decoded)
 }
