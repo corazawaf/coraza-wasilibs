@@ -19,14 +19,14 @@ SecRequestBodyAccess On
 # Initiate XML Processor in case of xml content-type
 #
 SecRule REQUEST_HEADERS:Content-Type "^(?:application(?:/soap\+|/)|text/)xml" \
-"id:'200000',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=XML"
+     "id:'200000',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=XML"
 
 # Enable JSON request body parser.
 # Initiate JSON Processor in case of JSON content-type; change accordingly
 # if your application does not use 'application/json'
 #
 SecRule REQUEST_HEADERS:Content-Type "^application/json" \
-"id:'200001',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=JSON"
+     "id:'200001',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=JSON"
 
 # Sample rule to enable JSON request body parser for more subtypes.
 # Uncomment or adapt this rule if you want to engage the JSON
@@ -42,6 +42,9 @@ SecRule REQUEST_HEADERS:Content-Type "^application/json" \
 # low as practical.
 #
 SecRequestBodyLimit 13107200
+
+SecRequestBodyInMemoryLimit 131072
+
 SecRequestBodyNoFilesLimit 131072
 
 # What to do if the request body size is above our configured limit.
@@ -125,7 +128,7 @@ FL %{MULTIPART_FILE_LIMIT_EXCEEDED}'"
 # MULTIPART_UNMATCHED_BOUNDARY.
 #
 SecRule MULTIPART_UNMATCHED_BOUNDARY "@eq 1" \
-"id:'200004',phase:2,t:none,log,deny,msg:'Multipart parser detected a possible unmatched boundary.'"
+    "id:'200004',phase:2,t:none,log,deny,msg:'Multipart parser detected a possible unmatched boundary.'"
 
 # Some internal errors will set flags in TX and we will need to look for these.
 # All of these are prefixed with "MSC_".  The following flags currently exist:
@@ -133,7 +136,7 @@ SecRule MULTIPART_UNMATCHED_BOUNDARY "@eq 1" \
 # COR_PCRE_LIMITS_EXCEEDED: PCRE match limits were exceeded.
 #
 SecRule TX:/^COR_/ "!@streq 0" \
-"id:'200005',phase:2,t:none,deny,msg:'Coraza internal error flagged: %{MATCHED_VAR_NAME}'"
+        "id:'200005',phase:2,t:none,deny,msg:'Coraza internal error flagged: %{MATCHED_VAR_NAME}'"
 
 
 # -- Response body handling --------------------------------------------------
@@ -164,14 +167,6 @@ SecResponseBodyLimitAction ProcessPartial
 
 
 # -- Filesystem configuration ------------------------------------------------
-
-# The location where Coraza stores temporary files (for example, when
-# it needs to handle a file upload that is larger than the configured limit).
-#
-# This default setting is chosen due to all systems have /tmp available however,
-# this is less than ideal. It is recommended that you specify a location that's private.
-#
-SecTmpDir /tmp/
 
 # The location where Coraza will keep its persistent data.  This default setting
 # is chosen due to all systems have /tmp available however, it
@@ -205,12 +200,12 @@ SecDataDir /tmp/
 
 # Default debug log path
 # Debug levels:
-# 1: fatal
-# 2: panic
-# 3: error
-# 4: warn
-# 5: info
-# 6: debug
+# 0:   No logging (least verbose)
+# 1:   Error
+# 2:   Warn
+# 3:   Info
+# 4-8: Debug
+# 9:   Trace (most verbose)
 # Most logging has not been implemented because it will be replaced with
 # advanced rule profiling options
 #SecDebugLog /opt/coraza/var/log/debug.log
