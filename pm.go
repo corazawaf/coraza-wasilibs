@@ -12,7 +12,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/corazawaf/coraza/v3/operators"
+	"github.com/corazawaf/coraza/v3/experimental/plugins"
 	"github.com/corazawaf/coraza/v3/rules"
 	ahocorasick "github.com/wasilibs/go-aho-corasick"
 )
@@ -139,6 +139,6 @@ func loadFromFile(filepath string, paths []string, root fs.FS) ([]byte, error) {
 
 // RegisterPM registers the pm operator using a WASI implementation instead of Go.
 func RegisterPM() {
-	operators.Register("pm", newPM)
-	operators.Register("pmFromFile", newPMFromFile)
+	plugins.RegisterOperator("pm", newPM)
+	plugins.RegisterOperator("pmFromFile", newPMFromFile)
 }

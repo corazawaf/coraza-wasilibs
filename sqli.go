@@ -4,7 +4,7 @@
 package wasilibs
 
 import (
-	"github.com/corazawaf/coraza/v3/operators"
+	"github.com/corazawaf/coraza/v3/experimental/plugins"
 	"github.com/corazawaf/coraza/v3/rules"
 	"github.com/wasilibs/go-libinjection"
 )
@@ -28,5 +28,5 @@ func (o *detectSQLi) Evaluate(tx rules.TransactionState, value string) bool {
 
 // RegisterSQLi registers the detect_sqli operator using a WASI implementation instead of Go.
 func RegisterSQLi() {
-	operators.Register("detectSQLi", newDetectSQLi)
+	plugins.RegisterOperator("detectSQLi", newDetectSQLi)
 }
