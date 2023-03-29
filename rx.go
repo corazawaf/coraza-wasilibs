@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"unicode/utf8"
 
-	"github.com/corazawaf/coraza/v3/operators"
+	"github.com/corazawaf/coraza/v3/experimental/plugins"
 	"github.com/corazawaf/coraza/v3/rules"
 	"github.com/wasilibs/go-re2"
 	"github.com/wasilibs/go-re2/experimental"
@@ -60,7 +60,7 @@ func (o *rx) Evaluate(tx rules.TransactionState, value string) bool {
 
 // RegisterRX registers the rx operator using a WASI implementation instead of Go.
 func RegisterRX() {
-	operators.Register("rx", newRX)
+	plugins.RegisterOperator("rx", newRX)
 }
 
 // matchesArbitraryBytes checks for control sequences for byte matches in the expression.

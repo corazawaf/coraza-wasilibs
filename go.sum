@@ -1,5 +1,5 @@
-github.com/corazawaf/coraza/v3 v3.0.0-rc.1.0.20230323163300-b8e5c6dbdd05 h1:3+TKjUFjjbHFiLIkJRBEqU0uE5xD29Lexs9/bscRQGY=
-github.com/corazawaf/coraza/v3 v3.0.0-rc.1.0.20230323163300-b8e5c6dbdd05/go.mod h1:GhpyYpKaOG/wHZtdyUpu74wo9StS3fzmtKvgSzms/XQ=
+github.com/corazawaf/coraza/v3 v3.0.0-rc.1.0.20230329004849-daf3747c8c45 h1:ROPaiSu+KA0Z4/dgUbvLVi6VCSKa/98PB78fh5WZpxI=
+github.com/corazawaf/coraza/v3 v3.0.0-rc.1.0.20230329004849-daf3747c8c45/go.mod h1:BKoHfX9ElA9uw7GBtKisLYM1snL2TRnA55GTA+Z/4ow=
 github.com/corazawaf/libinjection-go v0.1.2 h1:oeiV9pc5rvJ+2oqOqXEAMJousPpGiup6f7Y3nZj5GoM=
 github.com/corazawaf/libinjection-go v0.1.2/go.mod h1:OP4TM7xdJ2skyXqNX1AN1wN5nNZEmJNuWbNPOItn7aw=
 github.com/foxcpp/go-mockdns v1.0.0 h1:7jBqxd3WDWwi/6WhDvacvH1XsN3rOLXyHM1uhvIx6FI=
@@ -29,3 +29,5 @@ golang.org/x/net v0.8.0 h1:Zrh2ngAOFYneWTAIAPethzeaQLuHwhuBkuV6ZiRnUaQ=
 golang.org/x/net v0.8.0/go.mod h1:QVkue5JL9kW//ek3r6jTKnTFis1tRmNAW2P1shuFdJc=
 golang.org/x/sys v0.6.0 h1:MVltZSvRTcU2ljQOhs94SXPftV6DCNnZViHeQps87pQ=
 golang.org/x/tools v0.6.0 h1:BOw41kyTf3PuCW1pVQf8+Cyg8pMlkYB1oo9iJ6D/lKM=
+rsc.io/binaryregexp v0.2.0 h1:HfqmD5MEmC0zvwBuF187nq9mdnXjXsSivRiXN7SmRkE=
+rsc.io/binaryregexp v0.2.0/go.mod h1:qTv7/COck+e2FymRvadv62gMdZztPaShugOCi3I+8D8=

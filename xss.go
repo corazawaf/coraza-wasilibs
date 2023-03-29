@@ -4,7 +4,7 @@
 package wasilibs
 
 import (
-	"github.com/corazawaf/coraza/v3/operators"
+	"github.com/corazawaf/coraza/v3/experimental/plugins"
 	"github.com/corazawaf/coraza/v3/rules"
 	"github.com/wasilibs/go-libinjection"
 )
@@ -23,5 +23,5 @@ func (o *detectXSS) Evaluate(_ rules.TransactionState, value string) bool {
 
 // RegisterXSS registers the detect_xss operator using a WASI implementation instead of Go.
 func RegisterXSS() {
-	operators.Register("detectXSS", newDetectXSS)
+	plugins.RegisterOperator("detectXSS", newDetectXSS)
 }
