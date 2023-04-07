@@ -9,7 +9,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/corazawaf/coraza/v3/experimental/plugins"
-	"github.com/corazawaf/coraza/v3/rules"
+	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 	"github.com/wasilibs/go-re2"
 	"github.com/wasilibs/go-re2/experimental"
 )
@@ -18,9 +18,9 @@ type rx struct {
 	re *re2.Regexp
 }
 
-var _ rules.Operator = (*rx)(nil)
+var _ plugintypes.Operator = (*rx)(nil)
 
-func newRX(options rules.OperatorOptions) (rules.Operator, error) {
+func newRX(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 	// (?sm) enables multiline mode which makes 942522-7 work, see
 	// - https://stackoverflow.com/a/27680233
 	// - https://groups.google.com/g/golang-nuts/c/jiVdamGFU9E
@@ -40,7 +40,7 @@ func newRX(options rules.OperatorOptions) (rules.Operator, error) {
 	return &rx{re: re}, nil
 }
 
-func (o *rx) Evaluate(tx rules.TransactionState, value string) bool {
+func (o *rx) Evaluate(tx plugintypes.TransactionState, value string) bool {
 	if tx.Capturing() {
 		match := o.re.FindStringSubmatch(value)
 		if len(match) == 0 {

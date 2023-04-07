@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/corazawaf/coraza/v3"
-	"github.com/corazawaf/coraza/v3/rules"
+	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 )
 
 func TestRx(t *testing.T) {
@@ -71,7 +71,7 @@ func TestRx(t *testing.T) {
 	for _, tc := range tests {
 		tt := tc
 		t.Run(fmt.Sprintf("%s/%s", tt.pattern, tt.input), func(t *testing.T) {
-			opts := rules.OperatorOptions{
+			opts := plugintypes.OperatorOptions{
 				Arguments: tt.pattern,
 			}
 			rx, err := newRX(opts)
@@ -83,7 +83,7 @@ func TestRx(t *testing.T) {
 				t.Error(err)
 			}
 			tx := waf.NewTransaction()
-			res := rx.Evaluate(tx.(rules.TransactionState), tt.input)
+			res := rx.Evaluate(tx.(plugintypes.TransactionState), tt.input)
 			if res != tt.want {
 				t.Errorf("want %v, got %v", tt.want, res)
 			}

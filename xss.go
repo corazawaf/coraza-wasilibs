@@ -5,19 +5,19 @@ package wasilibs
 
 import (
 	"github.com/corazawaf/coraza/v3/experimental/plugins"
-	"github.com/corazawaf/coraza/v3/rules"
+	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 	"github.com/wasilibs/go-libinjection"
 )
 
 type detectXSS struct{}
 
-var _ rules.Operator = (*detectXSS)(nil)
+var _ plugintypes.Operator = (*detectXSS)(nil)
 
-func newDetectXSS(rules.OperatorOptions) (rules.Operator, error) {
+func newDetectXSS(plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 	return &detectXSS{}, nil
 }
 
-func (o *detectXSS) Evaluate(_ rules.TransactionState, value string) bool {
+func (o *detectXSS) Evaluate(_ plugintypes.TransactionState, value string) bool {
 	return libinjection.IsXSS(value)
 }
 
