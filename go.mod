@@ -3,7 +3,7 @@ module github.com/corazawaf/coraza-wasilibs
 go 1.18
 
 require (
-	github.com/corazawaf/coraza/v3 v3.0.0-rc.1.0.20230329004849-daf3747c8c45
+	github.com/corazawaf/coraza/v3 v3.0.0-rc.1.0.20230407054447-1f15017a03fe
 	github.com/magefile/mage v1.14.0
 	github.com/wasilibs/go-aho-corasick v0.3.0
 	github.com/wasilibs/go-libinjection v0.2.1
