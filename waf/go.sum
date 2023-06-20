@@ -291,8 +291,7 @@ github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81P
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/tetratelabs/wazero v1.1.0 h1:EByoAhC+QcYpwSZJSs/aV0uokxPwBgKxfiokSUwAknQ=
-github.com/tetratelabs/wazero v1.1.0/go.mod h1:wYx2gNRg8/WihJfSDxA1TIL8H+GkfLYm+bIfbblu9VQ=
+github.com/tetratelabs/wazero v1.2.1 h1:J4X2hrGzJvt+wqltuvcSjHQ7ujQxA9gb6PeMs4qlUWs=
 github.com/tidwall/gjson v1.14.4 h1:uo0p8EbA09J7RQaflQ1aBRffTR7xedD2bcIVSYxLnkM=
 github.com/tidwall/gjson v1.14.4/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
 github.com/tidwall/match v1.1.1 h1:+Ho715JplO36QYgwN9PGYNhgZvoUSc9X2c80KVTi+GA=
@@ -300,12 +299,9 @@ github.com/tidwall/match v1.1.1/go.mod h1:eRSPERbgtNPcGhD8UCthc6PmLEQXEWd3PRB5JT
 github.com/tidwall/pretty v1.2.0/go.mod h1:ITEVvHYasfjBbM0u2Pg8T2nJnzm8xPwvNhhsoaGGjNU=
 github.com/tidwall/pretty v1.2.1 h1:qjsOFOWWQl+N3RsoF5/ssm1pHmJJwhjlSbZ51I6wMl4=
 github.com/tidwall/pretty v1.2.1/go.mod h1:ITEVvHYasfjBbM0u2Pg8T2nJnzm8xPwvNhhsoaGGjNU=
-github.com/wasilibs/go-aho-corasick v0.4.0 h1:dPa/vF341zewXGiKh6Qih0H5MC1yVlDcAEp6fc14Nms=
-github.com/wasilibs/go-aho-corasick v0.4.0/go.mod h1:d5wspqdBMcfs1ZAFfkijwXKohocUb5vnP5bmxWLbJ74=
-github.com/wasilibs/go-libinjection v0.3.0 h1:X2zERL6bjRRPTnOWPI5CT6t1LMJNw7f+FZuTQTxJiTM=
-github.com/wasilibs/go-libinjection v0.3.0/go.mod h1:pjrvsp+uswZLkflpghGhrgKpGEZlemqkLwKOJyIsvj4=
-github.com/wasilibs/go-re2 v1.1.0 h1:RF/qHrnaFRIYaxnDFIZ4I8cZJTU+wE9DkOHtEHOUA18=
-github.com/wasilibs/go-re2 v1.1.0/go.mod h1:9j8kG6X6t8KQoB9odr0+WEieocbZwbKUgTo8GjNUdV4=
+github.com/wasilibs/go-aho-corasick v0.5.0 h1:Y8G8eJ7usuC14sd93IxxnZH43K5Bz5C90a6LsAYGjmY=
+github.com/wasilibs/go-libinjection v0.4.0 h1:dr1Y/kM/gmoA7eSfdf+CvCcmzwsz2jVYjNdakgladDU=
+github.com/wasilibs/go-re2 v1.2.0 h1:EBE8PqqetncIYi4HyQiH3q73ZVWcrL2UATSm8+jL6Ng=
 github.com/wasilibs/nottinygc v0.2.0 h1:cXz2Ac9bVMLkpuOlUlPQMWowjw0K2cOErXZOFdAj7yE=
 github.com/yargevad/filepathx v1.0.0 h1:SYcT+N3tYGi+NvazubCNlvgIPbzAk7i7y2dwg3I5FYc=
 github.com/yargevad/filepathx v1.0.0/go.mod h1:BprfX/gpYNJHJfc35GjRRpVcwWXS89gGulUIU5tK3tA=
