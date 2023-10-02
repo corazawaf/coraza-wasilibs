@@ -138,13 +138,15 @@ SecAction "id:900005,\
   setvar:tx.max_file_size=64100,\
   setvar:tx.combined_file_sizes=65535"
 # Write the value from the X-CRS-Test header as a marker to the log
+# Requests with X-CRS-Test header will not be matched by any rule. See https://github.com/coreruleset/go-ftw/pull/133
 SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
   "id:999999,\
   phase:1,\
+  pass,\
+  t:none,\
   log,\
   msg:'X-CRS-Test %{MATCHED_VAR}',\
-  pass,\
-  t:none"
+  ctl:ruleRemoveById=1-999999"
 `
 	// Configs are loaded with a precise order:
 	// 1. Coraza config
@@ -165,7 +167,7 @@ SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
 	}
 	errorWriter := bufio.NewWriter(errorFile)
 	conf = conf.WithErrorCallback(func(rule types.MatchedRule) {
-		msg := rule.ErrorLog(0)
+		msg := rule.ErrorLog() + "\n"
 		if _, err := io.WriteString(errorWriter, msg); err != nil {
 			tb.Fatal(err)
 		}
