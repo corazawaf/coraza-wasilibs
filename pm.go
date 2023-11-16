@@ -12,6 +12,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/corazawaf/coraza-wasilibs/internal/memoize"
 	"github.com/corazawaf/coraza/v3/experimental/plugins"
 	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 	ahocorasick "github.com/wasilibs/go-aho-corasick"
@@ -35,8 +36,10 @@ func newPM(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 		DFA:                  true,
 	})
 
+	m, _ := memoize.Do(data, func() (interface{}, error) { return builder.Build(dict), nil })
+
 	// TODO this operator is supposed to support snort data syntax: "@pm A|42|C|44|F"
-	return &pm{matcher: builder.Build(dict)}, nil
+	return &pm{matcher: m.(ahocorasick.AhoCorasick)}, nil
 }
 
 func (o *pm) Evaluate(tx plugintypes.TransactionState, value string) bool {
