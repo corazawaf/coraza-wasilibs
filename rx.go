@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"unicode/utf8"
 
+	"github.com/corazawaf/coraza-wasilibs/internal/memoize"
 	"github.com/corazawaf/coraza/v3/experimental/plugins"
 	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 	"github.com/wasilibs/go-re2"
@@ -26,18 +27,18 @@ func newRX(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 	// - https://groups.google.com/g/golang-nuts/c/jiVdamGFU9E
 	data := fmt.Sprintf("(?sm)%s", options.Arguments)
 
-	var re *re2.Regexp
+	var re interface{}
 	var err error
 
 	if matchesArbitraryBytes(data) {
-		re, err = experimental.CompileLatin1(data)
+		re, err = memoize.Do(data, func() (interface{}, error) { return experimental.CompileLatin1(data) })
 	} else {
-		re, err = re2.Compile(data)
+		re, err = memoize.Do(data, func() (interface{}, error) { return re2.Compile(data) })
 	}
 	if err != nil {
 		return nil, err
 	}
-	return &rx{re: re}, nil
+	return &rx{re: re.(*re2.Regexp)}, nil
 }
 
 func (o *rx) Evaluate(tx plugintypes.TransactionState, value string) bool {
