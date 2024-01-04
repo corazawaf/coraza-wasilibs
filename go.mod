@@ -7,7 +7,7 @@ require (
 	github.com/magefile/mage v1.15.0
 	github.com/wasilibs/go-aho-corasick v0.5.0
 	github.com/wasilibs/go-libinjection v0.4.0
-	github.com/wasilibs/go-re2 v1.4.0
+	github.com/wasilibs/go-re2 v1.5.0-pre.1
 )
 
 require (
@@ -17,6 +17,7 @@ require (
 	github.com/tidwall/gjson v1.17.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/wasilibs/wazerox v0.0.0-20231218050519-52f5e22ee8b5 // indirect
 	golang.org/x/net v0.11.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	rsc.io/binaryregexp v0.2.0 // indirect
