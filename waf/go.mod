@@ -38,7 +38,8 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/wasilibs/go-aho-corasick v0.5.0 // indirect
 	github.com/wasilibs/go-libinjection v0.4.0 // indirect
-	github.com/wasilibs/go-re2 v1.4.0 // indirect
+	github.com/wasilibs/go-re2 v1.5.0-pre.1 // indirect
+	github.com/wasilibs/wazerox v0.0.0-20231218050519-52f5e22ee8b5 // indirect
 	github.com/yargevad/filepathx v1.0.0 // indirect
 	golang.org/x/crypto v0.10.0 // indirect
 	golang.org/x/net v0.11.0 // indirect
