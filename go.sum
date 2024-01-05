@@ -21,9 +21,11 @@ github.com/wasilibs/go-aho-corasick v0.5.0 h1:Y8G8eJ7usuC14sd93IxxnZH43K5Bz5C90a
 github.com/wasilibs/go-aho-corasick v0.5.0/go.mod h1:1XPgz4lvFZA+Ytd8vfeCoqnwy4CSe0MxnLfRQJVqpJM=
 github.com/wasilibs/go-libinjection v0.4.0 h1:dr1Y/kM/gmoA7eSfdf+CvCcmzwsz2jVYjNdakgladDU=
 github.com/wasilibs/go-libinjection v0.4.0/go.mod h1:zD7fNXKSaTKoSTmrfuP9Gc16alNEgwkZaHIeDDk3WWM=
-github.com/wasilibs/go-re2 v1.4.0 h1:Jp6BM8G/zajgY1BCQUm3i7oGMdR1gA5EBv87wGd2ysc=
-github.com/wasilibs/go-re2 v1.4.0/go.mod h1:hLzlKjEgON+17hWjikLx8hJBkikyjQH/lsqCy9t6tIY=
+github.com/wasilibs/go-re2 v1.5.0-pre.1 h1:lJ0RGE6xp9hzFouzLrbEbzdZhpaqzg4rU2rA57eJLmI=
+github.com/wasilibs/go-re2 v1.5.0-pre.1/go.mod h1:GAociXj3tyaHNF0zuZdhEHuODXbPsFpOdg8vuAAq2pw=
 github.com/wasilibs/nottinygc v0.4.0 h1:h1TJMihMC4neN6Zq+WKpLxgd9xCFMw7O9ETLwY2exJQ=
+github.com/wasilibs/wazerox v0.0.0-20231218050519-52f5e22ee8b5 h1:7GQgc4ewesYeFF8bNxKvsT4q6ngGnGBkCFmwHs1ldwI=
+github.com/wasilibs/wazerox v0.0.0-20231218050519-52f5e22ee8b5/go.mod h1:IQNVyA4d1hWIe23mlMMuqXjyWMdndgSlNx6FqBkwPsM=
 golang.org/x/mod v0.8.0 h1:LUYupSeNrTNCGzR/hVBk2NHZO4hXcVaW1k4Qx7rjPx8=
 golang.org/x/net v0.11.0 h1:Gi2tvZIJyBtO9SDr1q9h5hEQCp/4L2RQ+ar0qjx2oNU=
 golang.org/x/net v0.11.0/go.mod h1:2L/ixqYpgIVXmeoSA/4Lu7BzTG4KIyPIryS4IsOd1oQ=
