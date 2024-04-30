@@ -47,26 +47,15 @@ func (o *pm) Evaluate(tx plugintypes.TransactionState, value string) bool {
 }
 
 func pmEvaluate(matcher ahocorasick.AhoCorasick, tx plugintypes.TransactionState, value string) bool {
-	iter := matcher.Iter(value)
-
 	if !tx.Capturing() {
 		// Not capturing so just one match is enough.
-		return iter.Next() != nil
+		return len(matcher.FindN(value, 1)) > 0
 	}
 
 	var numMatches int
-	for {
-		m := iter.Next()
-		if m == nil {
-			break
-		}
-
+	for _, m := range matcher.FindN(value, 10) {
 		tx.CaptureField(numMatches, value[m.Start():m.End()])
-
 		numMatches++
-		if numMatches == 10 {
-			return true
-		}
 	}
 
 	return numMatches > 0
