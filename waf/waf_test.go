@@ -68,7 +68,7 @@ func BenchmarkWAF(b *testing.B) {
 func runFTW(tb testing.TB, errorLogPath string, server *httptest.Server) {
 	tb.Helper()
 
-	var tests []test.FTWTest
+	var tests []*test.FTWTest
 	err := doublestar.GlobWalk(crstests.FS, "**/*.yaml", func(path string, d os.DirEntry) error {
 		yaml, err := fs.ReadFile(crstests.FS, path)
 		if err != nil {
@@ -97,9 +97,10 @@ func runFTW(tb testing.TB, errorLogPath string, server *httptest.Server) {
 	if err != nil {
 		tb.Fatal(err)
 	}
-	ftwConf.LogFile = errorLogPath
-	ftwConf.TestOverride.Input.DestAddr = &host
-	ftwConf.TestOverride.Input.Port = &port
+
+	ftwConf.WithLogfile(errorLogPath)
+	ftwConf.TestOverride.Overrides.DestAddr = &host
+	ftwConf.TestOverride.Overrides.Port = &port
 
 	res, err := runner.Run(ftwConf, tests, runner.RunnerConfig{
 		ShowTime: false,
