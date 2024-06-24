@@ -20,8 +20,8 @@ import (
 	"testing"
 
 	"github.com/bmatcuk/doublestar/v4"
-	coreruleset "github.com/corazawaf/coraza-coreruleset"
-	crstests "github.com/corazawaf/coraza-coreruleset/tests"
+	coreruleset "github.com/corazawaf/coraza-coreruleset/v4"
+	crstests "github.com/corazawaf/coraza-coreruleset/v4/tests"
 	"github.com/corazawaf/coraza/v3"
 	txhttp "github.com/corazawaf/coraza/v3/http"
 	"github.com/corazawaf/coraza/v3/types"
@@ -68,7 +68,7 @@ func BenchmarkWAF(b *testing.B) {
 func runFTW(tb testing.TB, errorLogPath string, server *httptest.Server) {
 	tb.Helper()
 
-	var tests []test.FTWTest
+	var tests []*test.FTWTest
 	err := doublestar.GlobWalk(crstests.FS, "**/*.yaml", func(path string, d os.DirEntry) error {
 		yaml, err := fs.ReadFile(crstests.FS, path)
 		if err != nil {
@@ -97,9 +97,10 @@ func runFTW(tb testing.TB, errorLogPath string, server *httptest.Server) {
 	if err != nil {
 		tb.Fatal(err)
 	}
-	ftwConf.LogFile = errorLogPath
-	ftwConf.TestOverride.Input.DestAddr = &host
-	ftwConf.TestOverride.Input.Port = &port
+
+	ftwConf.WithLogfile(errorLogPath)
+	ftwConf.TestOverride.Overrides.DestAddr = &host
+	ftwConf.TestOverride.Overrides.Port = &port
 
 	res, err := runner.Run(ftwConf, tests, runner.RunnerConfig{
 		ShowTime: false,
@@ -185,9 +186,9 @@ SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
 		defer r.Body.Close()
 		w.Header().Set("Content-Type", "text/plain")
 		switch {
-		case r.URL.Path == "/anything":
+		case r.URL.Path == "/anything", r.URL.Path == "/post":
 			body, err := io.ReadAll(r.Body)
-			// Emulated httpbin behaviour: /anything endpoint acts as an echo server, writing back the request body
+			// Emulated httpbin behaviour: /anything and /post endpoints act as an echo server, writing back the request body
 			if r.Header.Get("Content-Type") == "application/x-www-form-urlencoded" {
 				// Tests 954120-1 and 954120-2 are the only two calling /anything with a POST and payload is urlencoded
 				if err != nil {
@@ -195,11 +196,16 @@ SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
 				}
 				urldecodedBody, err := url.QueryUnescape(string(body))
 				if err != nil {
-					tb.Fatalf("handler can not unescape urlencoded request body: %v", err)
+					tb.Logf("[warning] handler can not unescape urlencoded request body: %v", err)
+					// If the body can't be unescaped, we will keep going with the received body
+					urldecodedBody = string(body)
 				}
-				fmt.Fprintf(w, urldecodedBody)
+				fmt.Fprint(w, urldecodedBody)
 			} else {
 				_, err = w.Write(body)
+				if err != nil {
+					tb.Fatalf("handler can not write request body: %v", err)
+				}
 			}
 
 		case strings.HasPrefix(r.URL.Path, "/base64/"):
@@ -208,10 +214,10 @@ SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
 			if err != nil {
 				tb.Fatalf("handler can not decode base64: %v", err)
 			}
-			fmt.Fprintf(w, string(b64Decoded))
+			fmt.Fprint(w, string(b64Decoded))
 		default:
 			// Common path "/status/200" defaults here
-			fmt.Fprintf(w, "Hello!")
+			fmt.Fprint(w, "Hello!")
 		}
 	})))
 	return errorPath, s
