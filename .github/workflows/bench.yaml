@@ -1,4 +1,7 @@
 name: Benchmark
+
+permissions: {}
+
 on:
   push:
     branches:
@@ -12,16 +15,18 @@ on:
 jobs:
   bench:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+      - uses: actions/setup-go@be3c94b385c4f180051c996d336f57a34c397495 # v3
         with:
           go-version: '^1.18.8'
           cache: true
 
       - run: go run mage.go wafbenchall
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5 # v3
         with:
           name: results
           path: build/*bench*.txt
