@@ -1,6 +1,6 @@
 module github.com/corazawaf/coraza-wasilibs/wafbench
 
-go 1.20
+go 1.22
 
 require (
 	github.com/bmatcuk/doublestar/v4 v4.4.0
