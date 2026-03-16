@@ -32,3 +32,21 @@ jobs:
           cache: true
 
       - run: go run mage.go check
+
+  tinygo:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '^1.20.14'
+          cache: true
+
+      - name: setup tinygo
+        uses: acifani/setup-tinygo@b2ba42b249c7d3efdfe94166ec0f48b3191404f7 # v1
+        with:
+          tinygo-version: 0.34.0
+      - name: setup wasmtime for tinygo
+        run: go install github.com/wasilibs/tools/cmd/wasmtime@875fe73f677c58d467ee373a9e00e6cb66b268f3
+
+      - run: tinygo test -target=wasi -v -scheduler=none .
