@@ -68,7 +68,7 @@ package wasilibs
 
 import (
 	"regexp/syntax"
-	"sort"
+	"slices"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -222,7 +222,7 @@ func prefilterFunc(pattern string) func(string) bool {
 		useSuffix := hasEndAnchor(re) && len(origLast) >= 2
 		if !usePrefix && !useSuffix {
 			// No anchor: sort longest-first for best early exit.
-			sort.Slice(filtered, func(i, j int) bool { return len(filtered[i]) > len(filtered[j]) })
+			slices.SortFunc(filtered, func(a, b string) int { return len(b) - len(a) })
 		}
 		pf = buildMultiNeedlePF(filtered, caseInsensitive, usePrefix, useSuffix)
 
@@ -1127,7 +1127,7 @@ func buildCombinedPF(v combinedRequired, ci bool, re *syntax.Regexp) func(string
 		usePrefix := hasBeginAnchor(re) && len(origFirst) >= 2
 		useSuffix := hasEndAnchor(re) && len(origLast) >= 2
 		if !usePrefix && !useSuffix {
-			sort.Slice(filteredAll, func(i, j int) bool { return len(filteredAll[i]) > len(filteredAll[j]) })
+			slices.SortFunc(filteredAll, func(a, b string) int { return len(b) - len(a) })
 		}
 		allPF = buildMultiNeedlePF(filteredAll, ci, usePrefix, useSuffix)
 	}

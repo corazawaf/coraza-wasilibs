@@ -22,7 +22,7 @@ func (o *detectSQLi) Evaluate(tx plugintypes.TransactionState, value string) boo
 	if !res {
 		return false
 	}
-	tx.CaptureField(0, string(fingerprint))
+	tx.CaptureField(0, fingerprint)
 	return true
 }
 

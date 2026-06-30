@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path"
@@ -83,6 +84,24 @@ func pmEvaluate(matcher ahocorasick.AhoCorasick, tx plugintypes.TransactionState
 	return numMatches > 0
 }
 
+func newPMFromDataset(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
+	data := options.Arguments
+	dataset, ok := options.Datasets[data]
+	if !ok {
+		return nil, fmt.Errorf("dataset %q not found", data)
+	}
+	builder := ahocorasick.NewAhoCorasickBuilder(ahocorasick.Opts{
+		AsciiCaseInsensitive: true,
+		MatchOnlyWholeWords:  false,
+		MatchKind:            ahocorasick.LeftMostLongestMatch,
+		DFA:                  true,
+	})
+
+	m, _ := memoizeDo(options.Memoizer, data, func() (any, error) { return builder.Build(dataset), nil })
+
+	return &pm{matcher: m.(ahocorasick.AhoCorasick), minLen: minPatternLen(dataset)}, nil
+}
+
 func newPMFromFile(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 	path := options.Arguments
 
@@ -155,4 +174,5 @@ func loadFromFile(filepath string, paths []string, root fs.FS) ([]byte, error) {
 func RegisterPM() {
 	plugins.RegisterOperator("pm", newPM)
 	plugins.RegisterOperator("pmFromFile", newPMFromFile)
+	plugins.RegisterOperator("pmFromDataset", newPMFromDataset)
 }
