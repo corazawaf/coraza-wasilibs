@@ -6,7 +6,6 @@ package waf
 import (
 	"bufio"
 	_ "embed"
-	b64 "encoding/base64"
 	"fmt"
 	"io"
 	"io/fs"
@@ -18,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/bmatcuk/doublestar/v4"
 	coreruleset "github.com/corazawaf/coraza-coreruleset/v4"
@@ -25,10 +25,11 @@ import (
 	"github.com/corazawaf/coraza/v3"
 	txhttp "github.com/corazawaf/coraza/v3/http"
 	"github.com/corazawaf/coraza/v3/types"
-	"github.com/coreruleset/go-ftw/config"
-	"github.com/coreruleset/go-ftw/output"
-	"github.com/coreruleset/go-ftw/runner"
-	"github.com/coreruleset/go-ftw/test"
+	albedo "github.com/coreruleset/albedo/server"
+	"github.com/coreruleset/go-ftw/v2/config"
+	"github.com/coreruleset/go-ftw/v2/output"
+	"github.com/coreruleset/go-ftw/v2/runner"
+	"github.com/coreruleset/go-ftw/v2/test"
 	"github.com/rs/zerolog"
 )
 
@@ -74,7 +75,7 @@ func runFTW(tb testing.TB, errorLogPath string, server *httptest.Server) {
 		if err != nil {
 			return err
 		}
-		t, err := test.GetTestFromYaml(yaml)
+		t, err := test.GetTestFromYaml(yaml, path)
 		if err != nil {
 			return err
 		}
@@ -91,24 +92,30 @@ func runFTW(tb testing.TB, errorLogPath string, server *httptest.Server) {
 	u, _ := url.Parse(server.URL)
 	host := u.Hostname()
 	port, _ := strconv.Atoi(u.Port())
-	// TODO(anuraaga): Don't use global config for FTW for better support of programmatic.
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	ftwConf, err := config.NewConfigFromFile(".ftw.yml")
 	if err != nil {
 		tb.Fatal(err)
 	}
 
-	ftwConf.WithLogfile(errorLogPath)
+	ftwConf.LogFile = errorLogPath
 	ftwConf.TestOverride.Overrides.DestAddr = &host
 	ftwConf.TestOverride.Overrides.Port = &port
 
-	res, err := runner.Run(ftwConf, tests, runner.RunnerConfig{
-		ShowTime: false,
-	}, output.NewOutput("quiet", os.Stdout))
+	runnerCfg := config.NewRunnerConfiguration(ftwConf)
+	runnerCfg.ReadTimeout = 3 * time.Second
+	if err := runnerCfg.LoadPlatformOverrides(".ftw-overrides.yml"); err != nil {
+		tb.Fatal(err)
+	}
+
+	res, err := runner.Run(runnerCfg, tests, output.NewOutput("quiet", os.Stdout))
 	if err != nil {
 		tb.Fatal(err)
 	}
 
+	if len(res.Stats.Ignored) > 0 {
+		tb.Logf("[info] %d ignored tests: %v", len(res.Stats.Ignored), res.Stats.Ignored)
+	}
 	if len(res.Stats.Failed) > 0 {
 		tb.Errorf("failed tests: %v", res.Stats.Failed)
 	}
@@ -185,40 +192,7 @@ SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
 	s := httptest.NewServer(txhttp.WrapHandler(waf, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 		w.Header().Set("Content-Type", "text/plain")
-		switch {
-		case r.URL.Path == "/anything", r.URL.Path == "/post":
-			body, err := io.ReadAll(r.Body)
-			// Emulated httpbin behaviour: /anything and /post endpoints act as an echo server, writing back the request body
-			if r.Header.Get("Content-Type") == "application/x-www-form-urlencoded" {
-				// Tests 954120-1 and 954120-2 are the only two calling /anything with a POST and payload is urlencoded
-				if err != nil {
-					tb.Fatalf("handler can not read request body: %v", err)
-				}
-				urldecodedBody, err := url.QueryUnescape(string(body))
-				if err != nil {
-					tb.Logf("[warning] handler can not unescape urlencoded request body: %v", err)
-					// If the body can't be unescaped, we will keep going with the received body
-					urldecodedBody = string(body)
-				}
-				fmt.Fprint(w, urldecodedBody)
-			} else {
-				_, err = w.Write(body)
-				if err != nil {
-					tb.Fatalf("handler can not write request body: %v", err)
-				}
-			}
-
-		case strings.HasPrefix(r.URL.Path, "/base64/"):
-			// Emulated httpbin behaviour: /base64 endpoint write the decoded base64 into the response body
-			b64Decoded, err := b64.StdEncoding.DecodeString(strings.TrimPrefix(r.URL.Path, "/base64/"))
-			if err != nil {
-				tb.Fatalf("handler can not decode base64: %v", err)
-			}
-			fmt.Fprint(w, string(b64Decoded))
-		default:
-			// Common path "/status/200" defaults here
-			fmt.Fprint(w, "Hello!")
-		}
+		albedo.Handler().ServeHTTP(w, r)
 	})))
 	return errorPath, s
 }
