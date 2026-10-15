@@ -15,9 +15,10 @@ import (
 
 func TestRx(t *testing.T) {
 	tests := []struct {
-		pattern string
-		input   string
-		want    bool
+		pattern   string
+		input     string
+		want      bool
+		prefilter bool
 	}{
 		{
 			pattern: "som(.*)ta",
@@ -94,13 +95,42 @@ func TestRx(t *testing.T) {
 			input:   "test123",
 			want:    true,
 		},
+		// Prefilter regressions (coraza#1724): an anchor does not make the
+		// nearest extracted literal a prefix or suffix. Without (?m), CRS
+		// rule 933110's pattern used to require HasSuffix(".ph") and skip
+		// "shell.php".
+		{
+			pattern:   `.*\.ph(?:p\d*|tml|ar|ps|t|pt)\.*$`,
+			input:     "shell.php",
+			want:      true,
+			prefilter: true,
+		},
+		{
+			pattern:   `.*\.ph(?:p\d*|tml|ar|ps|t|pt)\.*$`,
+			input:     "safe.jpg",
+			want:      false,
+			prefilter: true,
+		},
+		{
+			pattern:   `^(?:a|.)bc.*$`,
+			input:     "xbc",
+			want:      true,
+			prefilter: true,
+		},
+		{
+			pattern:   `^(?:a|.)bc.*$`,
+			input:     "xyz",
+			want:      false,
+			prefilter: true,
+		},
 	}
 
 	for _, tc := range tests {
 		tt := tc
-		t.Run(fmt.Sprintf("%s/%s", tt.pattern, tt.input), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%s/%s/prefilter=%v", tt.pattern, tt.input, tt.prefilter), func(t *testing.T) {
 			opts := plugintypes.OperatorOptions{
-				Arguments: tt.pattern,
+				Arguments:          tt.pattern,
+				RxPreFilterEnabled: tt.prefilter,
 			}
 			rx, err := newRX(opts)
 			if err != nil {

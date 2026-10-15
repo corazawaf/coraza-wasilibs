@@ -10,12 +10,12 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/corazawaf/coraza/v3/experimental/plugins"
+	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 	re2 "github.com/wasilibs/go-re2"
 	"github.com/wasilibs/go-re2/experimental"
 
 	"github.com/corazawaf/coraza-wasilibs/internal/memoize"
-	"github.com/corazawaf/coraza/v3/experimental/plugins"
-	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 )
 
 type rx struct {

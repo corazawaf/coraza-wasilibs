@@ -5,7 +5,6 @@ package waf
 
 import (
 	"bufio"
-	_ "embed"
 	"fmt"
 	"io"
 	"io/fs"
@@ -20,8 +19,9 @@ import (
 	"time"
 
 	"github.com/bmatcuk/doublestar/v4"
-	coreruleset "github.com/corazawaf/coraza-coreruleset/v4"
-	crstests "github.com/corazawaf/coraza-coreruleset/v4/tests"
+	corazaconf "github.com/corazawaf/coraza-coreruleset/coraza/v3"
+	crstests "github.com/corazawaf/coraza-coreruleset/crs/tests/v4"
+	coreruleset "github.com/corazawaf/coraza-coreruleset/crs/v4"
 	"github.com/corazawaf/coraza/v3"
 	txhttp "github.com/corazawaf/coraza/v3/http"
 	"github.com/corazawaf/coraza/v3/types"
@@ -32,9 +32,6 @@ import (
 	"github.com/coreruleset/go-ftw/v2/test"
 	"github.com/rs/zerolog"
 )
-
-//go:embed coraza.conf-recommended
-var confRecommended string
 
 func TestWAF(t *testing.T) {
 	errorLogPath, server := setupWAF(t)
@@ -124,12 +121,14 @@ func runFTW(tb testing.TB, errorLogPath string, server *httptest.Server) {
 func setupWAF(tb testing.TB) (string, *httptest.Server) {
 	tb.Helper()
 
+	confRecommended, err := fs.ReadFile(corazaconf.FS, "@coraza.conf-recommended")
+	if err != nil {
+		tb.Fatalf("failed to read coraza.conf-recommended: %v", err)
+	}
+
 	conf := coraza.NewWAFConfig()
 	customTestingConfig := `
 SecResponseBodyMimeType text/plain
-SecDefaultAction "phase:3,log,auditlog,pass"
-SecDefaultAction "phase:4,log,auditlog,pass"
-SecDefaultAction "phase:5,log,auditlog,pass"
 # Rule 900005 from https://github.com/coreruleset/coreruleset/blob/v4.0/dev/tests/regression/README.md#requirements
 SecAction "id:900005,\
   phase:1,\
@@ -160,10 +159,10 @@ SecRule REQUEST_HEADERS:X-CRS-Test "@rx ^.*$" \
 	// 1. Coraza config
 	// 2. Custom Rules for testing and eventually overrides of the basic Coraza config
 	// 3. CRS basic config
-	// 4. CRS rules (on top of which are applied the previously defined SecDefaultAction)
+	// 4. CRS rules (on top of which are applied the SecDefaultAction defined by the CRS basic config)
 	conf = conf.
 		WithRootFS(coreruleset.FS).
-		WithDirectives(confRecommended).
+		WithDirectives(string(confRecommended)).
 		WithDirectives(customTestingConfig).
 		WithDirectives("Include @crs-setup.conf.example").
 		WithDirectives("Include @owasp_crs/*.conf")

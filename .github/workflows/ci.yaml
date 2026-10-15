@@ -31,7 +31,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-go@be3c94b385c4f180051c996d336f57a34c397495 # v3
         with:
-          go-version: '1.25.x'
+          go-version: '1.26.x'
           cache: true
 
       - run: go run mage.go check
