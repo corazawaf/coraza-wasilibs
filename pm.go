@@ -7,12 +7,12 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path"
 	"strings"
 
-	"github.com/corazawaf/coraza-wasilibs/internal/memoize"
 	"github.com/corazawaf/coraza/v3/experimental/plugins"
 	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 	ahocorasick "github.com/wasilibs/go-aho-corasick"
@@ -20,6 +20,9 @@ import (
 
 type pm struct {
 	matcher ahocorasick.AhoCorasick
+	// minLen is the length of the shortest pattern. If the input is shorter
+	// than this, no pattern can match and we skip the Aho-Corasick automaton.
+	minLen int
 }
 
 var _ plugintypes.Operator = (*pm)(nil)
@@ -36,14 +39,34 @@ func newPM(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 		DFA:                  true,
 	})
 
-	m, _ := memoize.Do(data, func() (interface{}, error) { return builder.Build(dict), nil })
+	m, _ := memoizeDo(options.Memoizer, data, func() (any, error) { return builder.Build(dict), nil })
 
 	// TODO this operator is supposed to support snort data syntax: "@pm A|42|C|44|F"
-	return &pm{matcher: m.(ahocorasick.AhoCorasick)}, nil
+	return &pm{matcher: m.(ahocorasick.AhoCorasick), minLen: minPatternLen(dict)}, nil
 }
 
 func (o *pm) Evaluate(tx plugintypes.TransactionState, value string) bool {
+	if len(value) < o.minLen {
+		return false
+	}
 	return pmEvaluate(o.matcher, tx, value)
+}
+
+// minPatternLen returns the length of the shortest pattern.
+// If any pattern is empty it returns 0 immediately, disabling short-circuiting:
+// an empty pattern matches every input, so no input can be safely skipped.
+// If there are no patterns, it returns 0.
+func minPatternLen(patterns []string) int {
+	min := 0
+	for _, p := range patterns {
+		if len(p) == 0 {
+			return 0
+		}
+		if min == 0 || len(p) < min {
+			min = len(p)
+		}
+	}
+	return min
 }
 
 func pmEvaluate(matcher ahocorasick.AhoCorasick, tx plugintypes.TransactionState, value string) bool {
@@ -59,6 +82,24 @@ func pmEvaluate(matcher ahocorasick.AhoCorasick, tx plugintypes.TransactionState
 	}
 
 	return numMatches > 0
+}
+
+func newPMFromDataset(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
+	data := options.Arguments
+	dataset, ok := options.Datasets[data]
+	if !ok {
+		return nil, fmt.Errorf("dataset %q not found", data)
+	}
+	builder := ahocorasick.NewAhoCorasickBuilder(ahocorasick.Opts{
+		AsciiCaseInsensitive: true,
+		MatchOnlyWholeWords:  false,
+		MatchKind:            ahocorasick.LeftMostLongestMatch,
+		DFA:                  true,
+	})
+
+	m, _ := memoizeDo(options.Memoizer, data, func() (any, error) { return builder.Build(dataset), nil })
+
+	return &pm{matcher: m.(ahocorasick.AhoCorasick), minLen: minPatternLen(dataset)}, nil
 }
 
 func newPMFromFile(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
@@ -133,4 +174,5 @@ func loadFromFile(filepath string, paths []string, root fs.FS) ([]byte, error) {
 func RegisterPM() {
 	plugins.RegisterOperator("pm", newPM)
 	plugins.RegisterOperator("pmFromFile", newPMFromFile)
+	plugins.RegisterOperator("pmFromDataset", newPMFromDataset)
 }
