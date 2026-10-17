@@ -13,6 +13,12 @@ Note, it is possible to use cgo for some more performance improvement at the cos
 build tooling. See the READMEs of the implementation libraries for details on how to enable it.
 In general, pure Go should run fine.
 
+### Requirements
+
+- A recent Go version. See the `go` directive in [go.mod](go.mod) for the minimum.
+- TinyGo users should rely on v0.2.0 and the
+  [`release/v0.2.x`](https://github.com/corazawaf/coraza-wasilibs/tree/release/v0.2.x) branch.
+
 ### Usage
 
 Install the package as normal:
