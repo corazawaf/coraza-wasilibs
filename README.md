@@ -16,7 +16,7 @@ In general, pure Go should run fine.
 ### Requirements
 
 - A recent Go version. See the `go` directive in [go.mod](go.mod) for the minimum.
-- TinyGo is not supported. TinyGo users should stay on v0.2.0, maintained on the
+- TinyGo users should rely on v0.2.0 and the
   [`release/v0.2.x`](https://github.com/corazawaf/coraza-wasilibs/tree/release/v0.2.x) branch.
 
 ### Usage
