@@ -14,8 +14,6 @@ import (
 	"github.com/corazawaf/coraza/v3/experimental/plugins/plugintypes"
 	re2 "github.com/wasilibs/go-re2"
 	"github.com/wasilibs/go-re2/experimental"
-
-	"github.com/corazawaf/coraza-wasilibs/internal/memoize"
 )
 
 type rx struct {
@@ -49,7 +47,7 @@ func newRX(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 	}
 
 	cacheKey := fmt.Sprintf("rx:%v:%s", options.RxPreFilterEnabled, data)
-	compiled, err := memoizeDo(options.Memoizer, cacheKey, func() (any, error) {
+	c, err := memoizeDo(options.Memoizer, cacheKey, func() (*rxCompiled, error) {
 		re, err := re2.Compile(data)
 		if err != nil {
 			return nil, err
@@ -75,7 +73,6 @@ func newRX(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 	if err != nil {
 		return nil, err
 	}
-	c := compiled.(*rxCompiled)
 	return &rx{
 		re:           c.re,
 		minLen:       c.minLen,
@@ -132,11 +129,11 @@ var _ plugintypes.Operator = (*binaryRX)(nil)
 func newBinaryRX(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 	data := options.Arguments
 
-	re, err := memoizeDo(options.Memoizer, data, func() (any, error) { return experimental.CompileLatin1(data) })
+	re, err := memoizeDo(options.Memoizer, memoizeKey("binaryrx", data), func() (*re2.Regexp, error) { return experimental.CompileLatin1(data) })
 	if err != nil {
 		return nil, err
 	}
-	return &binaryRX{re: re.(*re2.Regexp)}, nil
+	return &binaryRX{re: re}, nil
 }
 
 func (o *binaryRX) Evaluate(tx plugintypes.TransactionState, value string) bool {
@@ -160,13 +157,6 @@ func (o *binaryRX) Evaluate(tx plugintypes.TransactionState, value string) bool 
 // RegisterRX registers the rx operator using a WASI implementation instead of Go.
 func RegisterRX() {
 	plugins.RegisterOperator("rx", newRX)
-}
-
-func memoizeDo(m plugintypes.Memoizer, key string, fn func() (any, error)) (any, error) {
-	if m != nil {
-		return m.Do(key, fn)
-	}
-	return memoize.Do(key, fn)
 }
 
 // matchesArbitraryBytes checks for control sequences for byte matches in the expression.
