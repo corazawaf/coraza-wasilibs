@@ -48,7 +48,7 @@ func newRX(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 		return newBinaryRX(options)
 	}
 
-	cacheKey := fmt.Sprintf("rx:%v:%s", options.RxPreFilterEnabled, data)
+	cacheKey := fmt.Sprintf("wasilibs/rx:%v:%s", options.RxPreFilterEnabled, data)
 	compiled, err := memoizeDo(options.Memoizer, cacheKey, func() (any, error) {
 		re, err := re2.Compile(data)
 		if err != nil {
@@ -132,7 +132,7 @@ var _ plugintypes.Operator = (*binaryRX)(nil)
 func newBinaryRX(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 	data := options.Arguments
 
-	re, err := memoizeDo(options.Memoizer, data, func() (any, error) { return experimental.CompileLatin1(data) })
+	re, err := memoizeDo(options.Memoizer, memoizeKey("binaryrx", data), func() (any, error) { return experimental.CompileLatin1(data) })
 	if err != nil {
 		return nil, err
 	}

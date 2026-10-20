@@ -39,7 +39,7 @@ func newPM(options plugintypes.OperatorOptions) (plugintypes.Operator, error) {
 		DFA:                  true,
 	})
 
-	m, _ := memoizeDo(options.Memoizer, data, func() (any, error) { return builder.Build(dict), nil })
+	m, _ := memoizeDo(options.Memoizer, memoizeKey("pm", dict...), func() (any, error) { return builder.Build(dict), nil })
 
 	// TODO this operator is supposed to support snort data syntax: "@pm A|42|C|44|F"
 	return &pm{matcher: m.(ahocorasick.AhoCorasick), minLen: minPatternLen(dict)}, nil
@@ -97,7 +97,10 @@ func newPMFromDataset(options plugintypes.OperatorOptions) (plugintypes.Operator
 		DFA:                  true,
 	})
 
-	m, _ := memoizeDo(options.Memoizer, data, func() (any, error) { return builder.Build(dataset), nil })
+	// Key by the dataset's content, not its name: the cache is shared by every
+	// WAF in the process, and two WAFs can define the same name with different
+	// entries.
+	m, _ := memoizeDo(options.Memoizer, memoizeKey("pmFromDataset", dataset...), func() (any, error) { return builder.Build(dataset), nil })
 
 	return &pm{matcher: m.(ahocorasick.AhoCorasick), minLen: minPatternLen(dataset)}, nil
 }
