@@ -63,9 +63,9 @@ func init() {
 
 The overridden operators are
 
-- `rx`: Uses [re2](https://github.com/wasilibs/go-re2)
-- `pm`: Uses [BurntMill/aho-corasick](https://github.com/wasilibs/go-aho-corasick)
-- `detect_sqli`, `detect_xss`: Uses [libinjection](https://github.com/wasilibs/go-libinjection)
+- `rx`: Uses [wasilibs/go-re2](https://github.com/wasilibs/go-re2)
+- `pm`: Uses [wasilibs/go-aho-corasick](https://github.com/wasilibs/go-aho-corasick)
+- `detect_sqli`, `detect_xss`: Uses [wasilibs/go-libinjection](https://github.com/wasilibs/go-libinjection)
 
 Note that `wasilibs.Register()` does not enable the `detect_sqli` plugin as it does not
 outperform the default implementation.
