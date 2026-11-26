@@ -67,8 +67,10 @@ The overridden operators are
 - `pm`: Uses [wasilibs/go-aho-corasick](https://github.com/wasilibs/go-aho-corasick)
 - `detect_sqli`, `detect_xss`: Uses [wasilibs/go-libinjection](https://github.com/wasilibs/go-libinjection)
 
-Note that `wasilibs.Register()` does not enable the `detect_sqli` plugin as it does not
-outperform the default implementation.
+Note that `wasilibs.Register()` does not enable the `pm` and `detect_sqli` plugins as they
+do not outperform the default implementations. `pm` also uses more memory, since each matcher
+runs in its own WebAssembly module instance. Call `wasilibs.RegisterPM()` or
+`wasilibs.RegisterSQLi()` to enable them explicitly.
 
 ### Performance
 
