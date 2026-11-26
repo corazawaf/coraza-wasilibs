@@ -6,13 +6,13 @@ require (
 	github.com/corazawaf/coraza/v3 v3.8.1
 	github.com/magefile/mage v1.17.0
 	github.com/wasilibs/go-aho-corasick v0.6.0
-	github.com/wasilibs/go-libinjection v0.5.0
+	github.com/wasilibs/go-libinjection v0.7.1
 	github.com/wasilibs/go-re2 v1.6.0
 	golang.org/x/sync v0.23.0
 )
 
 require (
-	github.com/corazawaf/libinjection-go v0.3.3 // indirect
+	github.com/corazawaf/libinjection-go v0.3.7 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/gotnospirit/makeplural v0.0.0-20180622080156-a5f48d94d976 // indirect
